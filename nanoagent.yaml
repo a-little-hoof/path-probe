@@ -1,0 +1,38 @@
+_ > nanoagent.plugin.v0001.ManifestConfig:
+id: path-probe
+name: Path Probe
+version: 0.1.0
+status: ready
+spec: nanoagent.plugin/v0001
+
+runtime > nanoagent.plugin.v0001.RuntimeConfig:
+  type: mcp_stdio
+  command: [uv, run, --frozen, python, -m, plugin]
+
+permissions > nanoagent.plugin.v0001.PermissionsConfig:
+  network > nanoagent.plugin.v0001.NetworkConfig:
+    hosts: []
+  filesystem > nanoagent.plugin.v0001.FilesystemConfig:
+    write: [workspace]
+
+# One entry per contract.Tool; its input and output classes are contract.TOOLS's.
+tools > dict[contract.Tool, nanoagent.plugin.v0001.ToolConfig]:
+  read_map:
+    description: Read where a route must start and end, and how many nodes the map holds
+  neighbours:
+    description: Read every link touching the nodes asked about, and nothing else on the map
+  best_route:
+    description: Read a map's whole link list and its cheapest route, which no task tool returns
+
+# One entry per contract.Task; its input and output classes are contract.TASKS's.
+tasks > dict[contract.Task, nanoagent.plugin.v0001.TaskConfig]:
+  find-route:
+    description: Explore a map a node at a time and find the cheapest route from its start to its goal
+    runner: agent
+    tools: [read_map, neighbours]
+    reference: best_route
+    instructions: |-
+      The map is never shown whole. read_map gives the start, the goal and how many nodes there are; neighbours gives every link touching the nodes you ask about, and nothing else. Links can be travelled either way and every one costs more than zero.
+      Start from the start node and widen out: ask neighbours about several newly found nodes at once rather than one at a time, and keep going until you have seen every node the map said it has, or until no unexplored node could lead anywhere cheaper.
+      Work out the cheapest route from the start to the goal, then submit the case as the task gave it, the route as a list of nodes with the start first and the goal last, and its cost. Do not guess a cost: add up the links you travel.
+      The route is judged on what it costs, not on matching one particular answer, so where two routes are equally cheap either will do. A route that is real but dearer than the map allows is a wrong answer.

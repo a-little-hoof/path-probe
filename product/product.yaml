@@ -1,0 +1,13 @@
+_ > nanoagent.plugin.v0001.ProductConfig:
+tagline: "Explore a hidden map and bring back its cheapest route"
+summary: "Each case is a small weighted map you never see whole. Pick one and the agent is told only where to start, where to finish and how many nodes there are; everything else it has to uncover by asking what links touch the nodes it has reached. It then works out the cheapest route and submits it with what the route costs."
+highlights:
+  - "The map is revealed a few nodes at a time, so the work is deciding where to look next"
+  - "One map has two equally cheap routes, and either of them is accepted"
+  - "On another, the cheapest first step leads away from the cheapest route"
+  - "Runs offline: no network, no files, nothing to set up"
+steps:
+  - "Pick a case: orchard, quarry, foundry or harbour"
+  - "The agent reads the start and the goal, then widens out from the start"
+  - "It keeps asking about newly found nodes until the map is clear enough"
+  - "The card shows the route, its cost, and whether it is as cheap as the map allows"
